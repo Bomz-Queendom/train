@@ -16,7 +16,7 @@ app.use("/agents", agentsRouter);
 app.use("/petitions", petitionsRouter);
 
 app.get("/", (req, res) => {
-    res.send({
+    return res.send({
         error: false,
         message: "Wellcome to deskplus api."
     });
