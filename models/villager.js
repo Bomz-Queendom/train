@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Petitions = require("./petitions");
 
 const villgerSchema = new mongoose.Schema({
   first_name: String,
@@ -20,7 +19,21 @@ const villgerSchema = new mongoose.Schema({
     province: String,
     postal_code: String
   },
-  petitions: [Petitions]
+  petitions: [
+    {
+      _id: mongoose.ObjectId,
+      agent_id: mongoose.ObjectId,
+      petition_type: String,
+      problem_detail: String,
+      scene: String,
+      image: String,
+      need_corrective: String,
+      status: String,
+      create_date: Date,
+      received_date: Date,
+      end_date: Date
+    }
+  ]
 })
 
 const villagerModels = mongoose.model('villagers', villgerSchema);
