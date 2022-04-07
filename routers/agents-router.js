@@ -1,64 +1,34 @@
 const express = require("express");
 const router = express.Router();
+const { body, validationResult, query, param } = require('express-validator');
 const Agents = require("../models/agent");
+const { addAgent, findAgentAll, findAgentById, editAgent, deleteAgent, agentSearch } = require("./func/agentFunc");
 
-router.post("/agent-add", async (req, res) => {
-    let data = new Agents(req.body);
-    try {
-        const dataToSave = await data.save();
-        res.status(200).json(data)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})
+router.post("/agent-add",
+    body("first_name").isString(),
+    body("last_name").isString(),
+    body("agent_pin").isString().isLength({ max: 6, min: 6 }),
+    body("email").isEmail(),
+    body("job_title").isString(),
+    body("phone_num").isString().isLength({ max: 10, min: 10 }),
+    addAgent
+);
 
-router.get("/agnet-findAll", async (req, res) => {
-    try {
-        let data = await Agents.find({});
-        res.json(data)
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-})
+router.get("/agents-findAll", findAgentAll);
 
-router.get('/agent-findOne/:id', async (req, res) => {
-    try {
-        let data = await Agents.findById(req.params.id);
-        res.json(data)
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-})
+router.get('/agent-findById/:id', param("id").isMongoId(), findAgentById);
 
-router.patch("/agent-editOne/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        const updatedData = req.body;
-        const options = { new: true };
+router.patch("/agent-editOne/:id",
+    body("first_name").isString(),
+    body("last_name").isString(),
+    body("agent_pin").isString().isLength({ max: 7, min: 7 }),
+    body("email").isEmail(),
+    body("job_title").isString(),
+    body("phone_num").isString().isLength({ max: 10, min: 10 }),
+    editAgent
+);
 
-        const result = await Agents.findByIdAndUpdate(
-            id, updatedData, options
-        )
-
-        res.send(result)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})
-
-router.delete("/agent-deleteOne/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        const data = await Agents.findByIdAndDelete(id)
-        res.send(`${data.first_name} has been deleted..`)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})
+router.delete("/agent-deleteOne/:id", param("id").isMongoId(), deleteAgent);
+router.get("/agents-search", agentSearch);
 
 module.exports = router;

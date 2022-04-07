@@ -1,39 +1,39 @@
 const express = require("express");
+const { findPetitions, findPetitionsByVillagerId, addPetition, addPetitionByVillagerId, editPetitionByVillagerId } = require("./func/petitionFunc");
 const router = express.Router();
-const Villagers = require('../models/villager');
+const { body, validationResult, query, param } = require('express-validator');
 
-router.get('/petitions-findAll', async (req, res) => {
-    let data = await Villagers.find();
-    try {
-        data.forEach(index => {
-            return res.json(index.petitions);
-        });
-    }
-    catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-})
 
-router.get('/petitions-villager-findAll/:id', async (req, res) => {
-    let data = await Villagers.findById(req.params.id);
-    try {
-        return res.json(data.petitions);
-    }
-    catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-})
+router.get('/petitions-findAll', findPetitions);
 
-router.post("/petitions-add/:id", async (req, res) => {
-    let dataInput = req.body;
-    let data = await Villagers.findById(req.params.id);
-    try {
-        await data.petitions.push(dataInput);
-        await data.save();
-        return res.status(200).json({massage : "add petition successfuly."});
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
-    }
-})
+router.get('/petitions-findPetitionsByVillagerId/:id', param("id").isMongoId(), findPetitionsByVillagerId);
+
+router.post("/petitions-addByVillagerId/:id",
+    param("id").isMongoId(),
+    body("agent_id").isMongoId(),
+    body("petition_type").isString(),
+    body("problem_detail").isString(),
+    body("image").isString(),
+    body("need_corrective").isString(),
+    body("status").isString(),
+    body("create_date").isDate(),
+    body("received_date").isDate(),
+    body("end_date").isDate(),
+    addPetitionByVillagerId
+);
+
+router.patch("/petitions-editPetitionByVillagerId/:id",
+    param("id").isMongoId(),
+    body("agent_id").isMongoId(),
+    body("petition_type").isString(),
+    body("problem_detail").isString(),
+    body("image").isString(),
+    body("need_corrective").isString(),
+    body("status").isString(),
+    body("create_date").isDate(),
+    body("received_date").isDate(),
+    body("end_date").isDate(),
+    editPetitionByVillagerId
+);
 
 module.exports = router;

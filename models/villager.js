@@ -25,7 +25,6 @@ const villgerSchema = new mongoose.Schema({
       agent_id: mongoose.ObjectId,
       petition_type: String,
       problem_detail: String,
-      scene: String,
       image: String,
       need_corrective: String,
       status: String,
